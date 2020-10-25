@@ -14,7 +14,7 @@ pluginTester({
   plugin: platformSpecific,
   pluginName: "babel-plugin-rn-platform-specific-extensions",
   pluginOptions: {
-    extensions: ["scss"]
+    extensions: [".scss"]
   },
   babelOptions: {
     filename: styleFileName
@@ -301,7 +301,7 @@ pluginTester({
   plugin: platformSpecific,
   pluginName: "babel-plugin-rn-platform-specific-extensions",
   pluginOptions: {
-    extensions: ["txt", "json"]
+    extensions: [".txt", ".json"]
   },
   snapshot: true,
   tests: [
@@ -406,7 +406,7 @@ pluginTester({
   pluginName: "babel-plugin-rn-platform-specific-extensions",
   pluginOptions: {
     platforms: ['native', 'os', 'rn'],
-    extensions: ["scss"]
+    extensions: [".scss"]
   },
   babelOptions: {
     filename: styleFileName

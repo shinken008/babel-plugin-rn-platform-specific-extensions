@@ -14,9 +14,9 @@ matrix:
     - node_js: "9"
       script: npm test -- --runInBand --coverage
       env: CI=coverage
-    - node_js: "8"
+    - node_js: "10"
       script: npm run lint && npm test
-      env: CI=test
+      env: CI=test 10
 before_install:
   - npm install -g npm@latest
 after_success:

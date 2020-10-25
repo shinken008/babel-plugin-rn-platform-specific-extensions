@@ -1,11 +1,16 @@
+require("core-js/fn/array/flat-map");
 const fs = require("fs");
 const nodePath = require("path");
 const babelTemplate = require("@babel/template").default;
 
 const isOS = platform => platform === 'ios' || platform === 'android';
-const otherOSPlatform = platform => platform === 'ios' ? 'android' : 'ios';
 
-module.exports = function() {
+function Node(val) {
+  this.val = val;
+  this.next = null;
+}
+
+module.exports = function(babel) {
   let isPlatformImportInserted = false;
   return {
     name: "react-native-platform-specific-extensions",
@@ -37,7 +42,7 @@ module.exports = function() {
         const node = path.node;
         const fileName = node.source.value;
         const ext = nodePath.extname(fileName);
-        const matchedExtensions = extensions.filter(e => `.${e}` === ext);
+        const matchedExtensions = extensions.filter(e => `${e}` === ext);
         const shouldMakePlatformSpecific = matchedExtensions.length === 1;
 
         if (!shouldMakePlatformSpecific) {
@@ -47,9 +52,13 @@ module.exports = function() {
         var specifier = node.specifiers[0];
         const transformedFileName = state.file.opts.filename;
         const currentDir = nodePath.dirname(transformedFileName);
-
         const filesMap = new Map();
-        const isExistsMap = new Map();
+        const ifExistsMap = new Map();
+        // use a list node store exist platform for easy get next exist platform
+        // store list node head
+        let existListNode = null;
+        let existListNodeCurrent = null;
+        let currentIndex = 0;
         const platforms = defaultPlatforms
           .filter(platform => !isOS(platform))
           .flatMap(platform => {
@@ -64,7 +73,18 @@ module.exports = function() {
           const platformFileExist = fs.existsSync(
             nodePath.resolve(currentDir, platformFileName)
           );
-          isExistsMap.set(platform, platformFileExist);
+          ifExistsMap.set(platform, platformFileExist);
+          if (platformFileExist) {
+            if (currentIndex === 0) {
+              // store list node head
+              existListNode = new Node(platform);
+              existListNodeCurrent = existListNode;
+            } else {
+              existListNodeCurrent.next = new Node(platform);
+              existListNodeCurrent = existListNodeCurrent.next;
+            }
+            currentIndex = currentIndex + 1;
+          }
         });
 
         let ast = null;
@@ -87,10 +107,33 @@ module.exports = function() {
 
         // ios, andriod use `os` platform,
         // ios andriod do not distinguish priority, so you need to use a configuration to bind together, according to Platform.OS dynamic require ios, andriod file
-        for (const [platform, exist] of isExistsMap) {
+        for (const [platform, exist] of ifExistsMap) {
           if (exist) {
             if (isOS(platform)) {
-              ast = astTernary(platform, filesMap.get(platform), filesMap.get(otherOSPlatform(platform)));
+              // ['ios', 'android', 'native', 'rn']
+              // use a list store exist relationship. For example: existListNode = Node { val, next: Node }
+              // find current platform node
+              // if it has next node then require next node value,
+              // else require node source value
+              // finally break the loop
+              let current = null;
+              let next = null;
+              while (!current) {
+                if (existListNode.val === platform) {
+                  current = existListNode;
+                  next = existListNode.next;
+                  break;
+                }
+                existListNode = existListNode.next;
+              };
+
+              let anotherFile;
+              if (next) {
+                anotherFile = filesMap.get(next.val);
+              } else {
+                anotherFile = fileName;
+              }
+              ast = astTernary(platform, filesMap.get(platform), anotherFile);
               path.replaceWithMultiple(ast);
               break;
             } else {

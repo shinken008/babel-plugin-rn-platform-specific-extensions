@@ -48,7 +48,7 @@ import \\"./styles.scss\\"
       ↓ ↓ ↓ ↓ ↓ ↓
 
 import { Platform } from \\"react-native\\";
-Platform.OS === \\"android\\" ? require(\\"./styles.android.scss\\") : require(\\"./styles.ios.scss\\");
+Platform.OS === \\"android\\" ? require(\\"./styles.android.scss\\") : require(\\"./styles.native.scss\\");
 "
 `;
 
@@ -59,7 +59,7 @@ import styles from \\"./styles.scss\\"
       ↓ ↓ ↓ ↓ ↓ ↓
 
 import { Platform } from \\"react-native\\";
-var styles = Platform.OS === \\"android\\" ? require(\\"./styles.android.scss\\") : require(\\"./styles.ios.scss\\");
+var styles = Platform.OS === \\"android\\" ? require(\\"./styles.android.scss\\") : require(\\"./styles.native.scss\\");
 "
 `;
 
@@ -70,7 +70,7 @@ import \\"./styles.scss\\"
       ↓ ↓ ↓ ↓ ↓ ↓
 
 import { Platform } from \\"react-native\\";
-Platform.OS === \\"android\\" ? require(\\"./styles.android.scss\\") : require(\\"./styles.ios.scss\\");
+Platform.OS === \\"android\\" ? require(\\"./styles.android.scss\\") : require(\\"./styles.scss\\");
 "
 `;
 
@@ -81,7 +81,7 @@ import styles from \\"./styles.scss\\"
       ↓ ↓ ↓ ↓ ↓ ↓
 
 import { Platform } from \\"react-native\\";
-var styles = Platform.OS === \\"android\\" ? require(\\"./styles.android.scss\\") : require(\\"./styles.ios.scss\\");
+var styles = Platform.OS === \\"android\\" ? require(\\"./styles.android.scss\\") : require(\\"./styles.scss\\");
 "
 `;
 
@@ -96,10 +96,10 @@ import something from \\"./somewhere.scss\\";
 
 import { Platform } from \\"react-native\\";
 var styles = Platform.OS === \\"ios\\" ? require(\\"./styles.ios.scss\\") : require(\\"./styles.android.scss\\");
-Platform.OS === \\"ios\\" ? require(\\"./other.ios.scss\\") : require(\\"./other.android.scss\\");
+Platform.OS === \\"ios\\" ? require(\\"./other.ios.scss\\") : require(\\"./other.native.scss\\");
 
 import \\"./foo.scss\\";
-var something = Platform.OS === \\"android\\" ? require(\\"./somewhere.android.scss\\") : require(\\"./somewhere.ios.scss\\");
+var something = Platform.OS === \\"android\\" ? require(\\"./somewhere.android.scss\\") : require(\\"./somewhere.scss\\");
 "
 `;
 
@@ -112,7 +112,7 @@ import other from \\"./other.scss\\"
 
 import { Platform } from \\"react-native\\";
 var styles = Platform.OS === \\"ios\\" ? require(\\"./styles.ios.scss\\") : require(\\"./styles.android.scss\\");
-var other = Platform.OS === \\"ios\\" ? require(\\"./other.ios.scss\\") : require(\\"./other.android.scss\\");
+var other = Platform.OS === \\"ios\\" ? require(\\"./other.ios.scss\\") : require(\\"./other.native.scss\\");
 "
 `;
 
@@ -145,7 +145,7 @@ import \\"./styles.scss\\"
       ↓ ↓ ↓ ↓ ↓ ↓
 
 import { Platform } from \\"react-native\\";
-Platform.OS === \\"ios\\" ? require(\\"./styles.ios.scss\\") : require(\\"./styles.android.scss\\");
+Platform.OS === \\"ios\\" ? require(\\"./styles.ios.scss\\") : require(\\"./styles.native.scss\\");
 "
 `;
 
@@ -156,7 +156,7 @@ import styles from \\"./styles.scss\\"
       ↓ ↓ ↓ ↓ ↓ ↓
 
 import { Platform } from \\"react-native\\";
-var styles = Platform.OS === \\"ios\\" ? require(\\"./styles.ios.scss\\") : require(\\"./styles.android.scss\\");
+var styles = Platform.OS === \\"ios\\" ? require(\\"./styles.ios.scss\\") : require(\\"./styles.native.scss\\");
 "
 `;
 
@@ -167,7 +167,7 @@ import \\"./styles.scss\\"
       ↓ ↓ ↓ ↓ ↓ ↓
 
 import { Platform } from \\"react-native\\";
-Platform.OS === \\"ios\\" ? require(\\"./styles.ios.scss\\") : require(\\"./styles.android.scss\\");
+Platform.OS === \\"ios\\" ? require(\\"./styles.ios.scss\\") : require(\\"./styles.scss\\");
 "
 `;
 
@@ -178,7 +178,7 @@ import styles from \\"./styles.scss\\"
       ↓ ↓ ↓ ↓ ↓ ↓
 
 import { Platform } from \\"react-native\\";
-var styles = Platform.OS === \\"ios\\" ? require(\\"./styles.ios.scss\\") : require(\\"./styles.android.scss\\");
+var styles = Platform.OS === \\"ios\\" ? require(\\"./styles.ios.scss\\") : require(\\"./styles.scss\\");
 "
 `;
 
