@@ -67,12 +67,12 @@ module.exports = function(babel) {
             }
             return platform;
           });
+
         platforms.forEach(platform => {
           const platformFileName = fileName.replace(ext, `.${platform}${ext}`);
+          const platformFileExist = fs.existsSync(nodePath.resolve(currentDir, platformFileName));
+
           filesMap.set(platform, platformFileName);
-          const platformFileExist = fs.existsSync(
-            nodePath.resolve(currentDir, platformFileName)
-          );
           ifExistsMap.set(platform, platformFileExist);
           if (platformFileExist) {
             if (currentIndex === 0) {

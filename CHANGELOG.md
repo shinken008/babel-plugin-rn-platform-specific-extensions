@@ -2,7 +2,7 @@
 
 - Intial release.
 
-# v0.2.1
+# v0.2.x
 
 - Options extensions value change `[ext]` into `.[ext]`.
 - Fix ios android platform bug.
