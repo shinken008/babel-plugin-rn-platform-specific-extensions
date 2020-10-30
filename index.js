@@ -101,7 +101,7 @@ module.exports = function(babel) {
           return babelTemplate.ast(
             platformImport +
               assignee +
-              `Platform.OS === "${platform}" ? require("${valueTrue}") : require("${valueFalse}");`
+            `Platform.OS === "${platform}" ? require("${valueTrue}").default : require("${valueFalse}").default;`
           );
         }
 

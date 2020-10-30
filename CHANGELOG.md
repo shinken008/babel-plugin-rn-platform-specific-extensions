@@ -6,3 +6,7 @@
 
 - Options extensions value change `[ext]` into `.[ext]`.
 - Fix ios android platform bug.
+
+# v0.3.x
+
+- Dynamic require source use require default module.`require('./app.js').default`.

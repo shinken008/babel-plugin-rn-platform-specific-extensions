@@ -6,7 +6,7 @@
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://egghead.io/courses/how-to-contribute-to-an-open-source-project-on-github)
 [![Greenkeeper badge](https://badges.greenkeeper.io/shinken008/babel-plugin-rn-platform-specific-extensions.svg)](https://greenkeeper.io/)
 
-Allow [react-native platform specific extensions](https://facebook.github.io/react-native/docs/platform-specific-code.html#platform-specific-extensions) to be used for other file types than Javascript inspired by [react-native-platform-specific-extensions](https://github.com/shinken008/babel-plugin-react-native-platform-specific-extensions).
+Allow [react-native platform specific extensions](https://reactnative.dev/docs/platform-specific-code/#platform-specific-extensions) to be used for other file types than Javascript inspired by [react-native-platform-specific-extensions](https://github.com/kristerkari/babel-plugin-react-native-platform-specific-extensions).
 
 Example:
 
