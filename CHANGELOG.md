@@ -10,3 +10,7 @@
 # v0.3.x
 
 - Dynamic require source use require default module.`require('./app.js').default`.
+
+# v0.4.x
+
+- Change babel plugin name `react-native-platform-specific-extensions` to `rn-platform-specific-extensions`.

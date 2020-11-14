@@ -13,7 +13,7 @@ function Node(val) {
 module.exports = function(babel) {
   let isPlatformImportInserted = false;
   return {
-    name: "react-native-platform-specific-extensions",
+    name: "rn-platform-specific-extensions",
     visitor: {
       Program() {
         isPlatformImportInserted = false;
