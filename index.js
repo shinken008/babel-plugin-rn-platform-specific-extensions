@@ -3,6 +3,9 @@ const fs = require("fs");
 const nodePath = require("path");
 const babelTemplate = require("@babel/template").default;
 
+const DEFAULT_PLATFORMS = ['os', 'native', 'rn'];
+const DEFAULT_OMIT_EXTENSIONS = ['.tsx', '.jsx', '.ts', '.js'];
+
 const isOS = platform => platform === 'ios' || platform === 'android';
 
 function Node(val) {
@@ -10,19 +13,36 @@ function Node(val) {
   this.next = null;
 }
 
+function getArrayOpt(state, name, defaultValue) {
+  return state.opts &&
+    Array.isArray(state.opts[name])
+    ? state.opts[name] : defaultValue;
+}
+
 module.exports = function(babel) {
   let isPlatformImportInserted = false;
+  let isNodeModulesFile = false;
+  let currentDir;
   return {
     name: "rn-platform-specific-extensions",
     visitor: {
-      Program() {
+      Program(path, state) {
+        const transformedFileName = state.file.opts.filename;
         isPlatformImportInserted = false;
+        currentDir = nodePath.dirname(transformedFileName);
+        isNodeModulesFile = /\/node_modules/.test(currentDir);
       },
       ImportDeclaration: function importResolver(path, state) {
-        const extensions =
-          state.opts &&
-          Array.isArray(state.opts.extensions) &&
-          state.opts.extensions;
+        let fileName = path.node.source.value;
+        const node = path.node;
+        // distinguish './someModule', '../someModule' is relative and 'someModule' is absolute
+        const isRelativeFile = /^\.+\//.test(fileName);
+        // do not handle node_modules
+        if (!isRelativeFile || isNodeModulesFile) {
+          return;
+        }
+
+        const extensions = getArrayOpt(state, 'extensions');
 
         if (!extensions) {
           throw new Error(
@@ -30,35 +50,13 @@ module.exports = function(babel) {
           );
         }
 
-        const defaultPlatforms =
-          state.opts &&
-            Array.isArray(state.opts.platforms) && state.opts.platforms.length
-            ? state.opts.platforms : ['os', 'native', 'rn'];
+        const omitExtensions = getArrayOpt(state, 'omitExtensions', DEFAULT_OMIT_EXTENSIONS);
 
+        const defaultPlatforms = getArrayOpt(state, 'platforms', DEFAULT_PLATFORMS);
         if (defaultPlatforms.find(platform => (platform === 'ios' || platform === 'android'))) {
           console.warn('Please use `os` instead of `ios` or `android` platforms in the plugin options');
         }
 
-        const node = path.node;
-        const fileName = node.source.value;
-        const ext = nodePath.extname(fileName);
-        const matchedExtensions = extensions.filter(e => `${e}` === ext);
-        const shouldMakePlatformSpecific = matchedExtensions.length === 1;
-
-        if (!shouldMakePlatformSpecific) {
-          return;
-        }
-
-        var specifier = node.specifiers[0];
-        const transformedFileName = state.file.opts.filename;
-        const currentDir = nodePath.dirname(transformedFileName);
-        const filesMap = new Map();
-        const ifExistsMap = new Map();
-        // use a list node store exist platform for easy get next exist platform
-        // store list node head
-        let existListNode = null;
-        let existListNodeCurrent = null;
-        let currentIndex = 0;
         const platforms = defaultPlatforms
           .filter(platform => !isOS(platform))
           .flatMap(platform => {
@@ -67,6 +65,47 @@ module.exports = function(babel) {
             }
             return platform;
           });
+
+        let ext = nodePath.extname(fileName);
+        let specifier = node.specifiers[0];
+
+        const matchedExtensions = extensions.filter(e => `${e}` === ext);
+        const matched = !!matchedExtensions.length;
+
+        let shouldMakePlatformSpecific = matched;
+        // handle some omit extensions like .js
+        if (!matched) {
+          // Strategies for omitted expansion
+          // if ext exists extensions and omitExtensions then excute
+          // omits [.tsx,.jsx,.ts,.js]. loop omits(exist `someModule.${platform}.${omit}`) then get the fileName and ext
+          for (const extension of omitExtensions) {
+            const omitPlatform = platforms.find(platform => {
+              const filePath = nodePath.resolve(currentDir, `${fileName}.${platform}${extension}`);
+              const result = fs.existsSync(filePath);
+              return result;
+            });
+            if (omitPlatform) {
+              fileName = `${fileName}${extension}`;
+              ext = extension;
+              shouldMakePlatformSpecific = true;
+              break;
+            } else {
+              shouldMakePlatformSpecific = false;
+            }
+          }
+        }
+
+        if (!shouldMakePlatformSpecific) {
+          return;
+        }
+
+        const filesMap = new Map();
+        const ifExistsMap = new Map();
+        // use a list node store exist platform for easy get next exist platform
+        // store list node head
+        let existListNode = null;
+        let existListNodeCurrent = null;
+        let currentIndex = 0;
 
         platforms.forEach(platform => {
           const platformFileName = fileName.replace(ext, `.${platform}${ext}`);

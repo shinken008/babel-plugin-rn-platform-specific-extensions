@@ -45,6 +45,7 @@ You must give one or more file extensions inside an array in the plugin options.
     ["rn-platform-specific-extensions", {
       "platforms": ["os", "native", "rn"], // default ["os", "native", "rn"]. 'os' includes 'ios' and 'andriod'
       "extensions": [".css", ".scss", ".sass"],
+      "omitExtensions": [".tsx", ".jsx", ".ts", ".js"], // default [".tsx", ".jsx", ".ts", ".js"]
     }]
   ]
 }

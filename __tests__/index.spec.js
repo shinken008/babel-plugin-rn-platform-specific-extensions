@@ -458,3 +458,42 @@ pluginTester({
     }
   ]
 });
+
+pluginTester({
+  plugin: platformSpecific,
+  pluginName: "babel-plugin-rn-platform-specific-extensions",
+  pluginOptions: {
+    extensions: [".ts"],
+    omitExtensions: [".tsx", ".jsx", ".ts", ".js"]
+  },
+  snapshot: true,
+  tests: [
+    {
+      title: "Should require rn ts files if they exits",
+      code: `import app from "./app"; import 'a'`,
+      setup() {
+        spy = jest.spyOn(fs, "existsSync").mockImplementation(path => {
+          return (
+            /app\.rn\.tsx$/.test(path)
+          );
+        });
+      },
+      teardown() {
+        spy.mockRestore();
+      }
+    }, {
+      title: "Should not modify if they require node_modules",
+      code: `import app from "app"`,
+      setup() {
+        spy = jest.spyOn(fs, "existsSync").mockImplementation(path => {
+          return (
+            /app\.rn\.tsx$/.test(path)
+          );
+        });
+      },
+      teardown() {
+        spy.mockRestore();
+      }
+    }
+  ]
+});

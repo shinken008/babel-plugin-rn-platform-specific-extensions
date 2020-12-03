@@ -1,5 +1,15 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`babel-plugin-rn-platform-specific-extensions Should not modify if they require node_modules: Should not modify if they require node_modules 1`] = `
+"
+import app from \\"app\\"
+
+      ↓ ↓ ↓ ↓ ↓ ↓
+
+import app from \\"app\\";
+"
+`;
+
 exports[`babel-plugin-rn-platform-specific-extensions Should not react to file types that are not defined in plugin options (.scss): Should not react to file types that are not defined in plugin options (.scss) 1`] = `
 "
 import styles from \\"./styles.scss\\"
@@ -230,6 +240,16 @@ import styles from \\"./styles.scss\\"
       ↓ ↓ ↓ ↓ ↓ ↓
 
 import styles from \\"./styles.rn.scss\\";
+"
+`;
+
+exports[`babel-plugin-rn-platform-specific-extensions Should require rn ts files if they exits: Should require rn ts files if they exits 1`] = `
+"
+import app from \\"./app\\"; import 'a'
+
+      ↓ ↓ ↓ ↓ ↓ ↓
+
+import app from \\"./app.rn.tsx\\";import 'a';
 "
 `;
 
