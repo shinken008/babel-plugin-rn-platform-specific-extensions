@@ -43,9 +43,18 @@ You must give one or more file extensions inside an array in the plugin options.
   ],
   "plugins": [
     ["rn-platform-specific-extensions", {
-      "platforms": ["os", "native", "rn"], // default ["os", "native", "rn"]. 'os' includes 'ios' and 'andriod'
+      // default ["os", "native", "rn"]. 'os' includes 'ios' and 'andriod'
+      "platforms": ["os", "native", "rn"],
       "extensions": [".css", ".scss", ".sass"],
-      "omitExtensions": [".tsx", ".jsx", ".ts", ".js"], // default [".tsx", ".jsx", ".ts", ".js"]
+      // default [".tsx", ".ts", ".jsx", ".js"]. Recommand custom config, should be prioritized by language
+      "omitExtensions": [".tsx", ".ts", ".jsx", ".js"],
+      "include": [
+        "workspaceFolder/src/external",
+        {
+          // especially config, modify current file path
+          'node_modules/metro/src/node-haste/DependencyGraph/assets/empty-module.js': 'entry path.js',
+        }
+      ],
     }]
   ]
 }

@@ -1,4 +1,4 @@
-/* eslint-disable @babel/development/plugin-name */
+/* eslint-disable */
 
 import pluginTester from "babel-plugin-tester";
 import platformSpecific from "../index";
