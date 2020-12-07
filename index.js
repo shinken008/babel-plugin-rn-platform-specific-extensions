@@ -61,7 +61,7 @@ module.exports = function (babel) {
       Program (path, state) {
         currentFilePath = state.file.opts.filename
         currentFileDir = nodePath.dirname(currentFilePath)
-        isNodeModulesFilePath = /\/node_modules/.test(currentFilePath)
+        isNodeModulesFilePath = /node_modules/.test(currentFilePath)
         isPlatformImportInserted = false
       },
       ImportDeclaration: function importResolver (path, state) {
