@@ -494,6 +494,32 @@ pluginTester({
       teardown() {
         spy.mockRestore();
       }
+    }, {
+      title: "Should require directory index file if the files do not exist ",
+      code: `import app from "./app"`,
+      setup() {
+        spy = jest.spyOn(fs, "existsSync").mockImplementation(path => {
+          return (
+            /app\/index\.rn\.tsx$/.test(path)
+          );
+        });
+      },
+      teardown() {
+        spy.mockRestore();
+      }
+    }, {
+      title: "Should require directory index file when source end with `/`",
+      code: `import app from "./app/"`,
+      setup() {
+        spy = jest.spyOn(fs, "existsSync").mockImplementation(path => {
+          return (
+            /app\/index\.rn\.tsx$/.test(path)
+          );
+        });
+      },
+      teardown() {
+        spy.mockRestore();
+      }
     }
   ]
 });

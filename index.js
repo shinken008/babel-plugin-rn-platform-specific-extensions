@@ -50,6 +50,53 @@ function includeLookup (path, paths) {
   return null
 }
 
+/**
+ * @param {boolean} isDirecory
+ * @returns {null | {filename: string, extension: string}} exist
+ */
+function makeExist ({ importFilename, currentFileDir, platforms, omitExtensions }, isDirecory) {
+  let index = ''
+  let exist = null
+  if (importFilename.endsWith('/')) {
+    index = isDirecory ? 'index' : ''
+  } else {
+    index = isDirecory ? '/index' : ''
+  }
+  for (const extension of omitExtensions) {
+    const isExist = platforms.find(platform => {
+      const filePath = nodePath.resolve(currentFileDir, `${importFilename}${index}.${platform}${extension}`)
+      const result = fs.existsSync(filePath)
+      if (result) {
+        exist = { filename: `${importFilename}${index}${extension}`, extension }
+      }
+      return result
+    })
+    if (isExist) {
+      break
+    }
+  }
+  return exist
+}
+
+/**
+ * find import omit extension file
+ * @returns {null | {filename: string, extension: string}} exist
+ */
+function getExistWithOmit ({
+  importFilename,
+  currentFileDir,
+  platforms,
+  omitExtensions
+}) {
+  // find without directory
+  let exist = makeExist({ importFilename, currentFileDir, platforms, omitExtensions })
+  if (!exist) {
+    // find with directory
+    exist = makeExist({ importFilename, currentFileDir, platforms, omitExtensions }, true)
+  }
+  return exist
+}
+
 module.exports = function (babel) {
   let currentFilePath
   let currentFileDir
@@ -65,10 +112,10 @@ module.exports = function (babel) {
         isPlatformImportInserted = false
       },
       ImportDeclaration: function importResolver (path, state) {
+        let importFilename = path.node.source.value
         const node = path.node
-        let fileName = node.source.value
         // distinguish './someModule', '../someModule' is relative and 'someModule' is absolute
-        const isRelativeImport = /^\.+\//.test(fileName)
+        const isRelativeImport = /^\.+\//.test(importFilename)
         const include = getArrayOpt(state, 'include', DEFAULT_INCLUDE)
         const includePath = includeLookup(currentFilePath, include)
         // modify file directory
@@ -105,30 +152,22 @@ module.exports = function (babel) {
             return platform
           })
 
-        let ext = nodePath.extname(fileName)
+        // file extension, may be modify it
+        let ext = nodePath.extname(importFilename)
         let specifier = node.specifiers[0]
+        const extensionsMatched = extensions.find(e => `${e}` === ext)
+        let shouldMakePlatformSpecific = extensionsMatched
 
-        const matchedExtensions = extensions.filter(e => `${e}` === ext)
-        const matched = !!matchedExtensions.length
-
-        let shouldMakePlatformSpecific = matched
-        // handle some omit extensions like .js
-        if (!matched) {
+        // handle some omit extensions writting like `import './app';`, then it may be import app.js or app/index.js file
+        if (!extensionsMatched) {
           // Strategies for omitted expansion
-          // if ext exists extensions and omitExtensions then excute
-          // omits [.tsx,.ts,.jsx,.js]. loop omits(exist `someModule.${platform}.${omit}`) then get the fileName and ext
-          for (const extension of omitExtensions) {
-            const omitPlatform = platforms.find(platform => {
-              const filePath = nodePath.resolve(currentFileDir, `${fileName}.${platform}${extension}`)
-              const result = fs.existsSync(filePath)
-              return result
-            })
-            if (omitPlatform) {
-              fileName = `${fileName}${extension}`
-              ext = extension
-              shouldMakePlatformSpecific = true
-              break
-            }
+          // if ext not exists extensions then find omitExtensions [.tsx,.ts,.jsx,.js].
+          // loop omitExtensions(exist `someModule.${platform}.${omit}`) then get the importFilename and ext
+          const exist = getExistWithOmit({ importFilename, currentFileDir, platforms, omitExtensions }) // function getExistWithOmit({ importFilename, currentFileDir, platforms, omitExtensions })
+          if (exist) {
+            importFilename = exist.filename
+            ext = exist.extension
+            shouldMakePlatformSpecific = true
           }
         }
 
@@ -140,15 +179,15 @@ module.exports = function (babel) {
         const ifExistsMap = new Map()
         // use a list node store exist platform for easy get next exist platform
         // store list node head
+        let currentIndex = 0
         let existListNode = null
         let existListNodeCurrent = null
-        let currentIndex = 0
 
         platforms.forEach(platform => {
-          const platformFileName = fileName.replace(ext, `.${platform}${ext}`)
-          const platformFileExist = fs.existsSync(nodePath.resolve(currentFileDir, platformFileName))
+          const platformFilename = importFilename.replace(ext, `.${platform}${ext}`)
+          const platformFileExist = fs.existsSync(nodePath.resolve(currentFileDir, platformFilename))
 
-          filesMap.set(platform, platformFileName)
+          filesMap.set(platform, platformFilename)
           ifExistsMap.set(platform, platformFileExist)
           if (platformFileExist) {
             if (currentIndex === 0) {
@@ -207,7 +246,7 @@ module.exports = function (babel) {
               if (next) {
                 anotherFile = filesMap.get(next.val)
               } else {
-                anotherFile = fileName
+                anotherFile = importFilename
               }
               ast = astTernary(platform, filesMap.get(platform), anotherFile)
               path.replaceWithMultiple(ast)

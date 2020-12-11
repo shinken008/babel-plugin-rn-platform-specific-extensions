@@ -126,6 +126,26 @@ var other = Platform.OS === 'ios' ? require('./other.ios.scss').default : requir
 "
 `;
 
+exports[`babel-plugin-rn-platform-specific-extensions Should require directory index file if the files do not exist : Should require directory index file if the files do not exist  1`] = `
+"
+import app from \\"./app\\"
+
+      ↓ ↓ ↓ ↓ ↓ ↓
+
+import app from \\"./app/index.rn.tsx\\";
+"
+`;
+
+exports[`babel-plugin-rn-platform-specific-extensions Should require directory index file when source end with \`/\`: Should require directory index file when source end with \`/\` 1`] = `
+"
+import app from \\"./app/\\"
+
+      ↓ ↓ ↓ ↓ ↓ ↓
+
+import app from \\"./app/index.rn.tsx\\";
+"
+`;
+
 exports[`babel-plugin-rn-platform-specific-extensions Should require ios and android files if they exits (side-effects-only import case): Should require ios and android files if they exits (side-effects-only import case) 1`] = `
 "
 import \\"./styles.scss\\"
