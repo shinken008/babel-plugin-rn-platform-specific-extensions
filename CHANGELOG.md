@@ -20,3 +20,8 @@
 - Add omitExtension option to require script.
 - Ignoring the node_modules file and relative import.
 - Add include option config path or file to avoid ignoring the node_modules file and relative import.
+
+# v1.1.0
+
+- Surport import directory index script file when import file not exists.
+- Surport absolute path.
