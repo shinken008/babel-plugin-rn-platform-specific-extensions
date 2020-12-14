@@ -9,12 +9,12 @@ const DEFAULT_INCLUDE = []
 
 const isOS = platform => platform === 'ios' || platform === 'android'
 
-function isRelativePath (nodePath) {
-  return nodePath.match(/^\.?\.\//)
+function isRelativePath (path) {
+  return path.match(/^\.?\.\//)
 }
 
-function isAbsolutePath (nodePath) {
-  return nodePath.startsWith('/')
+function isAbsolutePath (path) {
+  return nodePath.isAbsolute(path)
 }
 
 function Node (val) {
