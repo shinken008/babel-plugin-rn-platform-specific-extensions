@@ -520,6 +520,32 @@ pluginTester({
       teardown() {
         spy.mockRestore();
       }
+    }, {
+      title: "Should require absolute file",
+      code: `import app from "/app"`,
+      setup() {
+        spy = jest.spyOn(fs, "existsSync").mockImplementation(path => {
+          return (
+            /app\.rn\.tsx$/.test(path)
+          );
+        });
+      },
+      teardown() {
+        spy.mockRestore();
+      }
+    }, {
+      title: "Should require absolute directory index file",
+      code: `import app from "/app"`,
+      setup() {
+        spy = jest.spyOn(fs, "existsSync").mockImplementation(path => {
+          return (
+            /app\/index.native.ts$/.test(path)
+          );
+        });
+      },
+      teardown() {
+        spy.mockRestore();
+      }
     }
   ]
 });

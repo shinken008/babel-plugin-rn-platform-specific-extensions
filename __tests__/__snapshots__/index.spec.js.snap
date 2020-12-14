@@ -51,6 +51,26 @@ var myStyles = Platform.OS === 'ios' ? require('./myStylesFile.ios.scss').defaul
 "
 `;
 
+exports[`babel-plugin-rn-platform-specific-extensions Should require absolute directory index file: Should require absolute directory index file 1`] = `
+"
+import app from \\"/app\\"
+
+      ↓ ↓ ↓ ↓ ↓ ↓
+
+import app from \\"/app/index.native.ts\\";
+"
+`;
+
+exports[`babel-plugin-rn-platform-specific-extensions Should require absolute file: Should require absolute file 1`] = `
+"
+import app from \\"/app\\"
+
+      ↓ ↓ ↓ ↓ ↓ ↓
+
+import app from \\"/app.rn.tsx\\";
+"
+`;
+
 exports[`babel-plugin-rn-platform-specific-extensions Should require android and native files if they exits (side-effects-only import case): Should require android and native files if they exits (side-effects-only import case) 1`] = `
 "
 import \\"./styles.scss\\"

@@ -9,6 +9,14 @@ const DEFAULT_INCLUDE = []
 
 const isOS = platform => platform === 'ios' || platform === 'android'
 
+function isRelativePath (nodePath) {
+  return nodePath.match(/^\.?\.\//)
+}
+
+function isAbsolutePath (nodePath) {
+  return nodePath.startsWith('/')
+}
+
 function Node (val) {
   this.val = val
   this.next = null
@@ -115,7 +123,9 @@ module.exports = function (babel) {
         let importFilename = path.node.source.value
         const node = path.node
         // distinguish './someModule', '../someModule' is relative and 'someModule' is absolute
-        const isRelativeImport = /^\.+\//.test(importFilename)
+        const isRelativeImport = isRelativePath(importFilename)
+        // path like '/abc', we think it is a real path. We will not change currentFileDir, because path.resolve(currentFileDir, realPath) will return the realPath.
+        const isAbsoluteImport = isAbsolutePath(importFilename)
         const include = getArrayOpt(state, 'include', DEFAULT_INCLUDE)
         const includePath = includeLookup(currentFilePath, include)
         // modify file directory
@@ -125,7 +135,7 @@ module.exports = function (babel) {
 
         if (!includePath) {
           // default do not handle node_modules
-          if (isNodeModulesFilePath || !isRelativeImport) {
+          if (isNodeModulesFilePath || !(isRelativeImport || isAbsoluteImport)) {
             return
           }
         }
